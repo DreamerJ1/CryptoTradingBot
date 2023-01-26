@@ -1,20 +1,23 @@
-import os
 import pandas as pd
 
-from binance.spot import Spot 
-from dotenv import load_dotenv
+from binance.spot import Spot
 
-# get keys
-load_dotenv()
-api_key = os.getenv('API_KEY')
-api_secret = os.getenv('API_SECRET')
-
-# Create a new instance of the API class
+# get api 
 api = Spot()
 
-# Get the data
-data = api.klines(symbol='BTCUSDT', interval='1d')
+# get last 500 trades
+trades = api.trades(symbol='BTCUSDT', limit=500)
 
-# turn data into a dataframe
-df = pd.DataFrame(data)
+# convert to dataframe
+df = pd.DataFrame(trades)
 print(df)
+
+# get last 1 kline 
+klines = api.klines(symbol='BTCUSDT', interval='1d', limit=20)
+dataframe = pd.DataFrame(klines, columns=['Open time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close time', 'Quote asset volume', 'Number of trades', 'Taker buy base asset volume', 'Taker buy quote asset volume', 'Ignore'])
+print(dataframe)
+
+# get moving average of low of the last 7 data points
+ma = dataframe['Low'].rolling(7).mean()
+print(ma)
+
